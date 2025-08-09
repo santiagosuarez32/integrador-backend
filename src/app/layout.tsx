@@ -14,7 +14,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body
-        className="min-h-screen text-white"
+        className="text-white"
         style={{
           background: `
             radial-gradient(60% 60% at 20% 20%, rgba(139,92,246,0.35) 0%, transparent 60%),
