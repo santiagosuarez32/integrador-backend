@@ -13,7 +13,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className="bg-gradient-to-br from-gray-400 via-gray-800 to-gray-900 min-h-screen">
+      <body
+        className="min-h-screen text-white"
+        style={{
+          background: `
+            radial-gradient(60% 60% at 20% 20%, rgba(139,92,246,0.35) 0%, transparent 60%),
+            radial-gradient(50% 50% at 80% 30%, rgba(56,189,248,0.35) 0%, transparent 55%),
+            linear-gradient(180deg, #0b0f1a 0%, #0a0e18 100%)
+          `,
+        }}
+      >
         {children}
       </body>
     </html>

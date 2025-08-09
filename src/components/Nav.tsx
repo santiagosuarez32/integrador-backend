@@ -1,190 +1,137 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 
 const Nav: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleMenu = () => setIsOpen(!isOpen);
+  const toggleMenu = useCallback(() => setIsOpen(v => !v), []);
+  const closeMenu = useCallback(() => setIsOpen(false), []);
+
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [isOpen]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeMenu();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [closeMenu]);
 
   return (
-    <nav className="bg-black text-white px-8 py-4 flex items-center justify-between  relative">
+    <nav className="fixed top-0 left-0 right-0 z-50 px-6 md:px-8 py-4 flex items-center justify-between text-white">
       {/* Logo */}
-      <div className="flex items-center space-x-3 font-bold text-xl z-20 relative">
-        <svg
-          className="w-6 h-6 text-white"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
+      <a href="#" className="flex items-center gap-3 font-bold text-xl">
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M3 7l6 6-6 6" />
         </svg>
         <span>CHICX</span>
-      </div>
+      </a>
 
-      {/* Botón menú hamburguesa (solo móvil) */}
-      <button
-        onClick={toggleMenu}
-        className="md:hidden flex flex-col space-y-1 z-20 relative focus:outline-none"
-        aria-label="Toggle menu"
-        aria-expanded={isOpen}
-      >
-        <span
-          className={`block h-0.5 w-6 bg-white rounded transform transition duration-300 ease-in-out ${
-            isOpen ? "rotate-45 translate-y-1.5" : ""
-          }`}
-        />
-        <span
-          className={`block h-0.5 w-6 bg-white rounded transition duration-300 ease-in-out ${
-            isOpen ? "opacity-0" : "opacity-100"
-          }`}
-        />
-        <span
-          className={`block h-0.5 w-6 bg-white rounded transform transition duration-300 ease-in-out ${
-            isOpen ? "-rotate-45 -translate-y-1.5" : ""
-          }`}
-        />
-      </button>
-
-      {/* Menú principal escritorio */}
-      <ul className="hidden md:flex space-x-6 bg-gray-900 rounded-full px-4 py-2 text-sm font-medium z-10 relative">
-        <li>
-          <a
-            href="#"
-            className="bg-white text-black rounded-full px-4 py-1"
-            aria-current="page"
-          >
-            Home
-          </a>
-        </li>
-        <li>
-          <a href="#" className="hover:text-gray-300 transition">
-            Shop
-          </a>
-        </li>
-        <li>
-          <a href="#" className="hover:text-gray-300 transition">
-            Sale
-          </a>
-        </li>
-        <li>
-          <a href="#" className="hover:text-gray-300 transition">
-            Blog
-          </a>
-        </li>
-        <li>
-          <a href="#" className="hover:text-gray-300 transition">
-            Showcase
-          </a>
-        </li>
+      {/* Desktop menu */}
+      <ul className="hidden md:flex items-center gap-8 text-sm">
+        {["Home","Shop","Sale","Blog","Showcase"].map(item=>(
+          <li key={item}><a className="hover:text-violet-300 transition-colors" href="#">{item}</a></li>
+        ))}
       </ul>
 
-      {/* Botones login y signup escritorio */}
-      <div className="hidden md:flex space-x-4 items-center z-10 relative">
-        <button className="flex items-center space-x-1 text-gray-400 hover:text-white transition">
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15 12H3m12 0l-4-4m4 4l-4 4"
-            />
-          </svg>
-          <span>Login</span>
-        </button>
-        <button className="bg-white text-black rounded-full px-4 py-1 font-semibold hover:bg-gray-200 transition">
-          Sign up
-        </button>
+      <div className="hidden md:flex items-center gap-4">
+        <button className="hover:text-violet-300 transition-colors">Login</button>
+        <button className="bg-white text-black rounded-full px-4 py-1 font-semibold hover:bg-gray-200 transition">Sign up</button>
       </div>
 
-      {/* Menú móvil desplegable */}
-      {isOpen && (
-        <div className="absolute top-full left-0 right-0 bg-black bg-opacity-95 rounded-b-lg shadow-lg md:hidden z-10">
-          <ul className="flex flex-col space-y-3 p-6 text-center">
-            <li>
-              <a
-                href="#"
-                className="block bg-white text-black rounded-full px-6 py-2 font-semibold"
-                onClick={() => setIsOpen(false)}
-              >
-                Home
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="block hover:text-gray-300 transition"
-                onClick={() => setIsOpen(false)}
-              >
-                Shop
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="block hover:text-gray-300 transition"
-                onClick={() => setIsOpen(false)}
-              >
-                Sale
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="block hover:text-gray-300 transition"
-                onClick={() => setIsOpen(false)}
-              >
-                Blog
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="block hover:text-gray-300 transition"
-                onClick={() => setIsOpen(false)}
-              >
-                Showcase
-              </a>
-            </li>
-            <li className="pt-4 border-t border-gray-700">
-              <button
-                className="w-full flex justify-center items-center space-x-2 text-gray-400 hover:text-white transition"
-                onClick={() => setIsOpen(false)}
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 12H3m12 0l-4-4m4 4l-4 4"
-                  />
-                </svg>
-                <span>Login</span>
-              </button>
-              <button
-                className="mt-2 w-full bg-white text-black rounded-full px-4 py-2 font-semibold hover:bg-gray-200 transition"
-                onClick={() => setIsOpen(false)}
-              >
-                Sign up
-              </button>
-            </li>
-          </ul>
+      {/* Botón hamburguesa (mobile) */}
+      <button
+        onClick={toggleMenu}
+        aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
+        aria-expanded={isOpen}
+        aria-controls="mobile-drawer"
+        className={`md:hidden relative z-[60] flex flex-col justify-center items-center gap-1.5 w-9 h-9
+                    transition ${isOpen ? "opacity-0 pointer-events-none" : "opacity-100"}`}
+      >
+        <span className={`h-0.5 w-6 bg-white rounded transition-transform duration-300 ${isOpen ? "rotate-45 translate-y-[7px]" : ""}`} />
+        <span className={`h-0.5 w-6 bg-white rounded transition-opacity duration-200 ${isOpen ? "opacity-0" : "opacity-100"}`} />
+        <span className={`h-0.5 w-6 bg-white rounded transition-transform duration-300 ${isOpen ? "-rotate-45 -translate-y-[7px]" : ""}`} />
+      </button>
+
+      {/* Overlay */}
+      <div
+        onClick={closeMenu}
+        className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden
+                    ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+        aria-hidden={!isOpen}
+      />
+
+      {/* Drawer izquierdo */}
+      <aside
+        id="mobile-drawer"
+        className={`fixed top-0 left-0 z-[70] h-screen w-[84%] max-w-[340px] md:hidden
+                    bg-white/7 border-r border-white/10 backdrop-blur-xl
+                    transition-transform duration-300 ease-out
+                    ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
+        role="dialog" aria-modal="true"
+      >
+        <div className="h-1 w-full bg-gradient-to-r from-violet-400 via-white to-cyan-300 opacity-80" />
+
+        {/* Header drawer */}
+        <div className="flex items-center justify-between px-5 py-4">
+          <div className="flex items-center gap-3 font-bold">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 7l6 6-6 6" />
+            </svg>
+            <span>CHICX</span>
+          </div>
+          {/* X grande y accesible */}
+          <button
+            onClick={closeMenu}
+            aria-label="Cerrar menú"
+            className="grid place-items-center w-11 h-11 rounded-full hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 transition"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-      )}
+
+        {/* Links */}
+        <nav className="px-5 pt-2">
+          <ul className="flex flex-col gap-2 text-base">
+            {["Home","Shop","Sale","Blog","Showcase"].map((label, i) => (
+              <li
+                key={label}
+                style={{ transitionDelay: `${100 + i * 60}ms` }}
+                className={`transform transition-all duration-300 ${isOpen ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"}`}
+              >
+                <a href="#" onClick={closeMenu} className="block rounded-xl px-4 py-3 hover:bg-white/10 active:bg-white/15 transition">
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          {/* CTA */}
+          <div
+            style={{ transitionDelay: `${100 + 5 * 60}ms` }}
+            className={`mt-6 transform transition-all duration-300 ${isOpen ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"}`}
+          >
+            <button onClick={closeMenu} className="w-full rounded-full bg-white text-black font-semibold px-4 py-2 hover:bg-gray-200 transition">
+              Sign up
+            </button>
+            <button onClick={closeMenu} className="mt-3 w-full rounded-full px-4 py-2 text-white/80 hover:bg-white/10 transition">
+              Login
+            </button>
+          </div>
+        </nav>
+
+        {/* Footer mini info */}
+        <div className="absolute bottom-4 left-0 right-0 px-5 text-[11px] text-white/60">
+          <div className="flex items-center justify-between border-t border-white/10 pt-3">
+            <span>New drops weekly</span>
+            <span>Easy returns</span>
+          </div>
+        </div>
+      </aside>
     </nav>
   );
 };

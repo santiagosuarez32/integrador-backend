@@ -53,99 +53,67 @@ const products: Product[] = [
 const ProductsSection: React.FC = () => {
   return (
     <section className="py-12 px-6 md:px-12">
-      <h2 className="text-4xl font-extrabold text-center text-white mb-12 tracking-wide">
+      <h2 className="text-3xl md:text-4xl font-extrabold text-center text-white mb-10 md:mb-12 tracking-wide">
         Nuestros Perfumes Exclusivos
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+      <div className="mx-auto max-w-7xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
         {products.map(({ id, name, description, price, category, imageUrl }) => (
           <article
             key={id}
-            className="relative rounded-xl overflow-hidden flex flex-col cursor-pointer"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(75,85,99,0.85) 0%, rgba(31,41,55,0.85) 100%)",
-              boxShadow:
-                "0 10px 25px rgba(31,41,55,0.6), 0 4px 6px rgba(75,85,99,0.4)",
-              border: "1.5px solid rgba(255, 255, 255, 0.15)",
-              transition: "box-shadow 0.3s ease, transform 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              const el = e.currentTarget;
-              el.style.boxShadow =
-                "0 18px 40px rgba(31,41,55,0.85), 0 8px 15px rgba(75,85,99,0.65)";
-              el.style.transform = "translateY(-6px)";
-            }}
-            onMouseLeave={(e) => {
-              const el = e.currentTarget;
-              el.style.boxShadow =
-                "0 10px 25px rgba(31,41,55,0.6), 0 4px 6px rgba(75,85,99,0.4)";
-              el.style.transform = "translateY(0)";
-            }}
+            className="group relative rounded-2xl p-[1px] bg-gradient-to-br from-white/20 via-white/10 to-white/5
+                       transition-transform duration-300 hover:-translate-y-1"
           >
-            <div className="relative">
-              <img
-                src={imageUrl}
-                alt={name}
-                className="w-full h-48 object-cover"
-                loading="lazy"
-              />
-              <span
-                className="absolute top-3 left-3 text-sm font-semibold px-3 py-1 rounded-full"
-                style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.15)",
-                  color: "#f9fafb",
-                  backdropFilter: "blur(6px)",
-                  boxShadow: "0 0 8px rgba(255,255,255,0.2)",
-                }}
-              >
-                {category}
-              </span>
-            </div>
-
-            <div className="p-5 flex flex-col flex-grow text-gray-100">
-              <h3 className="text-2xl font-bold mb-2 drop-shadow-md">{name}</h3>
-              <p className="flex-grow text-gray-300 mb-4">{description}</p>
-              <div className="mt-auto flex items-center justify-between">
-                <p className="text-xl font-extrabold drop-shadow-md text-cyan-400">
-                  {price}
-                </p>
-                <button
-                  className="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold px-5 py-2 rounded-full shadow-md transition-colors"
-                  aria-label={`Comprar ${name}`}
+            {/* inner card */}
+            <div className="relative rounded-2xl h-full overflow-hidden border border-white/10 bg-white/5 backdrop-blur-md">
+              {/* imagen */}
+              <div className="relative">
+                <img
+                  src={imageUrl}
+                  alt={name}
+                  className="w-full h-48 object-cover"
+                  loading="lazy"
+                />
+                {/* badge categoría */}
+                <span
+                  className="absolute top-3 left-3 text-xs font-semibold px-3 py-1 rounded-full
+                             bg-white/15 text-white backdrop-blur-[2px] ring-1 ring-white/20"
                 >
-                  Comprar
-                </button>
+                  {category}
+                </span>
+
+                {/* glow sutil al hover */}
+                <div className="pointer-events-none absolute -inset-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  <div className="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-violet-500/20 blur-3xl" />
+                  <div className="absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-cyan-400/20 blur-3xl" />
+                </div>
+              </div>
+
+              {/* contenido */}
+              <div className="p-5 flex flex-col text-gray-100">
+                <h3 className="text-xl md:text-2xl font-bold mb-2">
+                  {name}
+                </h3>
+                <p className="text-sm md:text-base text-white/80 mb-4 flex-grow">
+                  {description}
+                </p>
+
+                <div className="mt-auto flex items-center justify-between">
+                  <p className="text-lg md:text-xl font-extrabold text-cyan-300 drop-shadow">
+                    {price}
+                  </p>
+                  <button
+                    className="inline-flex items-center gap-2 rounded-full bg-white text-black font-semibold
+                               px-4 py-2 hover:bg-gray-200 transition"
+                    aria-label={`Comprar ${name}`}
+                    type="button"
+                  >
+                    Comprar
+                    <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                  </button>
+                </div>
               </div>
             </div>
-
-            {/* Decoraciones geométricas borrosas */}
-            <div
-              style={{
-                position: "absolute",
-                top: -40,
-                right: -40,
-                width: 120,
-                height: 120,
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
-                borderRadius: "50%",
-                filter: "blur(40px)",
-                zIndex: 0,
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                bottom: -30,
-                left: -30,
-                width: 100,
-                height: 100,
-                backgroundColor: "rgba(255, 255, 255, 0.07)",
-                borderRadius: "50%",
-                filter: "blur(25px)",
-                zIndex: 0,
-              }}
-            />
           </article>
         ))}
       </div>
