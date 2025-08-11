@@ -4,19 +4,19 @@ import React from "react";
 
 const Footer: React.FC = () => {
   return (
-    <footer className="relative mt-16">
-      {/* capa glass */}
-      <div className="relative border-t border-white/10 bg-white/5 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+    <footer className="relative mt-16 bg-transparent">
+      {/* línea superior suave para separar sin “corte” brusco */}
+      <div className="border-t border-black/10">
+        <div className="mx-auto max-w-6xl px-6 md:px-8 py-12 grid grid-cols-1 md:grid-cols-3 gap-10 text-slate-900">
           {/* Navegación */}
           <nav aria-label="Footer Navigation">
-            <h4 className="text-white font-semibold mb-4">Navegación</h4>
-            <ul className="space-y-2 text-sm text-white/80">
+            <h4 className="text-base font-semibold mb-4">Navegación</h4>
+            <ul className="space-y-2 text-sm text-slate-600">
               {["Inicio", "Productos", "Servicios", "Sobre Nosotros", "Contacto"].map((item) => (
                 <li key={item}>
                   <a
                     href="#"
-                    className="transition-colors hover:text-violet-300"
+                    className="inline-block hover:text-yellow-600 transition-colors"
                   >
                     {item}
                   </a>
@@ -27,14 +27,14 @@ const Footer: React.FC = () => {
 
           {/* Contacto */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Contacto</h4>
-            <address className="not-italic space-y-2 text-sm text-white/80">
+            <h4 className="text-base font-semibold mb-4">Contacto</h4>
+            <address className="not-italic space-y-2 text-sm text-slate-600">
               <p>Calle Falsa 123, Ciudad, País</p>
               <p>
                 Teléfono:{" "}
                 <a
                   href="tel:+1234567890"
-                  className="hover:text-violet-300 transition-colors"
+                  className="hover:text-yellow-600 transition-colors"
                 >
                   +1 234 567 890
                 </a>
@@ -43,7 +43,7 @@ const Footer: React.FC = () => {
                 Email:{" "}
                 <a
                   href="mailto:info@ejemplo.com"
-                  className="hover:text-violet-300 transition-colors"
+                  className="hover:text-yellow-600 transition-colors"
                 >
                   info@ejemplo.com
                 </a>
@@ -53,8 +53,8 @@ const Footer: React.FC = () => {
 
           {/* Redes sociales */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Síguenos</h4>
-            <div className="flex space-x-6">
+            <h4 className="text-base font-semibold mb-4">Síguenos</h4>
+            <div className="flex items-center gap-4">
               {[
                 {
                   label: "Facebook",
@@ -79,12 +79,13 @@ const Footer: React.FC = () => {
                   key={label}
                   href="#"
                   aria-label={label}
-                  className="text-white/80 hover:text-violet-300 transition-colors"
+                  className="group grid place-items-center w-10 h-10 rounded-full ring-1 ring-slate-300 text-slate-700 hover:text-yellow-600 hover:ring-yellow-500 transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <svg
-                    className="w-6 h-6 fill-current"
+                    className="w-5 h-5"
+                    fill="currentColor"
                     viewBox="0 0 24 24"
                     aria-hidden="true"
                   >
@@ -97,9 +98,10 @@ const Footer: React.FC = () => {
         </div>
 
         {/* línea inferior */}
-        <div className="border-t border-white/10 mt-10 pt-6 text-center text-xs text-white/60">
-          &copy; {new Date().getFullYear()} Tu Empresa. Todos los derechos
-          reservados.
+        <div className="border-t border-black/10">
+          <div className="mx-auto max-w-6xl px-6 md:px-8 py-6 text-center text-xs text-slate-600">
+            &copy; {new Date().getFullYear()} Tu Empresa. Todos los derechos reservados.
+          </div>
         </div>
       </div>
     </footer>

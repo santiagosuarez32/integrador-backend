@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link"; // Importamos Link
 
 interface Product {
   id: number;
@@ -59,49 +60,47 @@ const ProductsSection: React.FC = () => {
 
       <div className="mx-auto max-w-7xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
         {products.map(({ id, name, description, price, category, imageUrl }) => (
-          <article
-            key={id}
-            className="group relative rounded-2xl bg-white border border-gray-200 shadow-md hover:shadow-lg transition-transform duration-300 hover:-translate-y-1"
-          >
-            {/* imagen */}
-            <div className="relative">
-              <img
-                src={imageUrl}
-                alt={name}
-                className="w-full h-48 object-cover rounded-t-2xl"
-                loading="lazy"
-              />
-              {/* badge categoría */}
-              <span className="absolute top-3 left-3 text-xs font-semibold px-3 py-1 rounded-full bg-yellow-500 text-white shadow">
-                {category}
-              </span>
-            </div>
-
-            {/* contenido */}
-            <div className="p-5 flex flex-col text-slate-800">
-              <h3 className="text-xl md:text-2xl font-bold mb-2">
-                {name}
-              </h3>
-              <p className="text-sm md:text-base text-slate-600 mb-4 flex-grow">
-                {description}
-              </p>
-
-              <div className="mt-auto flex items-center justify-between">
-                <p className="text-lg md:text-xl font-extrabold text-yellow-600">
-                  {price}
-                </p>
-                <button
-                  className="inline-flex items-center gap-2 rounded-full bg-yellow-500 text-white font-semibold
-                             px-4 py-2 hover:bg-yellow-400 transition"
-                  aria-label={`Comprar ${name}`}
-                  type="button"
-                >
-                  Comprar
-                  <span className="transition-transform group-hover:translate-x-0.5">→</span>
-                </button>
+          <Link key={id} href={`/products/${id}`} className="group">
+            <article
+              className="relative rounded-2xl bg-white border border-gray-200 shadow-md hover:shadow-lg transition-transform duration-300 hover:-translate-y-1 cursor-pointer"
+            >
+              {/* imagen */}
+              <div className="relative">
+                <img
+                  src={imageUrl}
+                  alt={name}
+                  className="w-full h-48 object-cover rounded-t-2xl"
+                  loading="lazy"
+                />
+                {/* badge categoría */}
+                <span className="absolute top-3 left-3 text-xs font-semibold px-3 py-1 rounded-full bg-yellow-500 text-white shadow">
+                  {category}
+                </span>
               </div>
-            </div>
-          </article>
+
+              {/* contenido */}
+              <div className="p-5 flex flex-col text-slate-800">
+                <h3 className="text-xl md:text-2xl font-bold mb-2">
+                  {name}
+                </h3>
+                <p className="text-sm md:text-base text-slate-600 mb-4 flex-grow">
+                  {description}
+                </p>
+
+                <div className="mt-auto flex items-center justify-between">
+                  <p className="text-lg md:text-xl font-extrabold text-yellow-600">
+                    {price}
+                  </p>
+                  <span
+                    className="inline-flex items-center gap-2 rounded-full bg-yellow-500 text-white font-semibold
+                               px-4 py-2 hover:bg-yellow-400 transition"
+                  >
+                    Ver más →
+                  </span>
+                </div>
+              </div>
+            </article>
+          </Link>
         ))}
       </div>
     </section>

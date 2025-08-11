@@ -7,17 +7,63 @@ const Nav: React.FC = () => {
   const toggle = useCallback(() => setOpen(v => !v), []);
   const close  = useCallback(() => setOpen(false), []);
 
+  // bloquear scroll de body cuando el drawer está abierto
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [open]);
+
+  // ⬇️ NUEVO: cerrar en mobile si el usuario scrollea / hace swipe
+  useEffect(() => {
+    if (!open) return;
+
+    const mm = window.matchMedia("(max-width: 767px)");
+    if (!mm.matches) return; // solo móvil
+
+    let lastScrollY = window.scrollY;
+    let touchStartY = 0;
+
+    const onScroll = () => {
+      // si por alguna razón llega scroll (ej. barras/OSK), cerramos
+      if (window.scrollY > lastScrollY + 6) close();
+      lastScrollY = window.scrollY;
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      // gesto de desplazamiento con mouse/trackpad
+      if (e.deltaY > 8) close();
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0]?.clientY ?? 0;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      const dy = (e.touches[0]?.clientY ?? 0) - touchStartY;
+      // cualquier “deslizar” claro hacia arriba/abajo cierra
+      if (Math.abs(dy) > 14) close();
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("wheel", onWheel, { passive: true });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+    };
+  }, [open, close]);
+  // ⬆️ FIN NUEVO
 
   const links = ["Home", "Shop", "Sale", "Blog", "Showcase"];
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50">
       <div className="mx-auto max-w-[1120px] mt-3 md:mt-4 px-4 md:px-6">
-        {/* WRAPPER único: borde y redondeo en un SOLO contenedor */}
+        {/* WRAPPER único */}
         <div className="rounded-2xl border border-neutral-800 bg-neutral-950/80 backdrop-blur-md shadow-sm text-slate-100 overflow-hidden">
           {/* HEADER */}
           <div className="h-14 px-5 md:px-8 flex items-center justify-between">
@@ -60,16 +106,14 @@ const Nav: React.FC = () => {
             </button>
           </div>
 
-          {/* DROPDOWN móvil: animación SUAVE con grid-rows */}
+          {/* DROPDOWN móvil */}
           <div
             id="mobile-dropdown"
             className={`md:hidden grid transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
               ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
             role="dialog" aria-modal="true"
           >
-            {/* Contenido colapsable (recorta con overflow-hidden) */}
             <div className="overflow-hidden">
-              {/* sutil divisor superior */}
               <div className="h-px w-full bg-gradient-to-r from-transparent via-neutral-800 to-transparent" />
               <nav className="px-5 py-4">
                 <ul className="flex flex-col gap-1">

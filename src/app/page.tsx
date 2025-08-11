@@ -16,7 +16,7 @@ const Home: NextPage = () => {
       <Widget />
       <ProductsSection />
       <About />
-     
+     <Footer/>
     </div>
   );
 };
