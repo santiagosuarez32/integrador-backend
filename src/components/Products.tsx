@@ -52,8 +52,8 @@ const products: Product[] = [
 
 const ProductsSection: React.FC = () => {
   return (
-    <section className="py-12 px-6 md:px-12">
-      <h2 className="text-3xl md:text-4xl font-extrabold text-center text-white mb-10 md:mb-12 tracking-wide">
+    <section className="py-12 px-6 md:px-12 bg-transparent">
+      <h2 className="text-3xl md:text-4xl font-extrabold text-center text-slate-900 mb-10 md:mb-12 tracking-wide">
         Nuestros Perfumes Exclusivos
       </h2>
 
@@ -61,57 +61,44 @@ const ProductsSection: React.FC = () => {
         {products.map(({ id, name, description, price, category, imageUrl }) => (
           <article
             key={id}
-            className="group relative rounded-2xl p-[1px] bg-gradient-to-br from-white/20 via-white/10 to-white/5
-                       transition-transform duration-300 hover:-translate-y-1"
+            className="group relative rounded-2xl bg-white border border-gray-200 shadow-md hover:shadow-lg transition-transform duration-300 hover:-translate-y-1"
           >
-            {/* inner card */}
-            <div className="relative rounded-2xl h-full overflow-hidden border border-white/10 bg-white/5 backdrop-blur-md">
-              {/* imagen */}
-              <div className="relative">
-                <img
-                  src={imageUrl}
-                  alt={name}
-                  className="w-full h-48 object-cover"
-                  loading="lazy"
-                />
-                {/* badge categoría */}
-                <span
-                  className="absolute top-3 left-3 text-xs font-semibold px-3 py-1 rounded-full
-                             bg-white/15 text-white backdrop-blur-[2px] ring-1 ring-white/20"
-                >
-                  {category}
-                </span>
+            {/* imagen */}
+            <div className="relative">
+              <img
+                src={imageUrl}
+                alt={name}
+                className="w-full h-48 object-cover rounded-t-2xl"
+                loading="lazy"
+              />
+              {/* badge categoría */}
+              <span className="absolute top-3 left-3 text-xs font-semibold px-3 py-1 rounded-full bg-yellow-500 text-white shadow">
+                {category}
+              </span>
+            </div>
 
-                {/* glow sutil al hover */}
-                <div className="pointer-events-none absolute -inset-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  <div className="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-violet-500/20 blur-3xl" />
-                  <div className="absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-cyan-400/20 blur-3xl" />
-                </div>
-              </div>
+            {/* contenido */}
+            <div className="p-5 flex flex-col text-slate-800">
+              <h3 className="text-xl md:text-2xl font-bold mb-2">
+                {name}
+              </h3>
+              <p className="text-sm md:text-base text-slate-600 mb-4 flex-grow">
+                {description}
+              </p>
 
-              {/* contenido */}
-              <div className="p-5 flex flex-col text-gray-100">
-                <h3 className="text-xl md:text-2xl font-bold mb-2">
-                  {name}
-                </h3>
-                <p className="text-sm md:text-base text-white/80 mb-4 flex-grow">
-                  {description}
+              <div className="mt-auto flex items-center justify-between">
+                <p className="text-lg md:text-xl font-extrabold text-yellow-600">
+                  {price}
                 </p>
-
-                <div className="mt-auto flex items-center justify-between">
-                  <p className="text-lg md:text-xl font-extrabold text-cyan-300 drop-shadow">
-                    {price}
-                  </p>
-                  <button
-                    className="inline-flex items-center gap-2 rounded-full bg-white text-black font-semibold
-                               px-4 py-2 hover:bg-gray-200 transition"
-                    aria-label={`Comprar ${name}`}
-                    type="button"
-                  >
-                    Comprar
-                    <span className="transition-transform group-hover:translate-x-0.5">→</span>
-                  </button>
-                </div>
+                <button
+                  className="inline-flex items-center gap-2 rounded-full bg-yellow-500 text-white font-semibold
+                             px-4 py-2 hover:bg-yellow-400 transition"
+                  aria-label={`Comprar ${name}`}
+                  type="button"
+                >
+                  Comprar
+                  <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                </button>
               </div>
             </div>
           </article>

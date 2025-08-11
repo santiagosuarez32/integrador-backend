@@ -7,72 +7,88 @@ const Hero: React.FC = () => {
 
   return (
     <section
-      className="relative isolate overflow-hidden text-white rounded-b-3xl px-6 py-16 sm:py-24 flex items-center justify-center"
-      style={{ height: `calc(100vh - ${navHeight}px)` }}
+      className="
+        relative isolate overflow-hidden
+        flex items-center
+        px-6 md:px-8 pt-24 md:pt-28 pb-16 md:pb-20
+        w-full
+        min-h-[calc(100vh-64px)]
+        supports-[min-height:100svh]:min-h-[calc(100svh-64px)]
+      "
+      style={{ minHeight: `calc(100vh - ${navHeight}px)` }}
     >
-      {/* Contenido */}
-      <div className="relative mx-auto max-w-5xl text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 backdrop-blur-md shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
-          <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_2px_rgba(16,185,129,0.7)]" />
-          <span className="text-[11px] font-semibold tracking-[0.18em] text-white/90">
-            NEW SPRING COLLECTION 2023
-          </span>
-        </div>
-
-        <h1 className="mt-6 text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
-          <span className="bg-gradient-to-r from-violet-300 via-white to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_6px_24px_rgba(124,58,237,0.35)]">
-            Where style speaks, trends resonate,
-          </span>
-          <br />
-          <span className="bg-gradient-to-r from-cyan-200 via-white to-violet-300 bg-clip-text text-transparent">
-            fashion flourishes
-          </span>
-        </h1>
-
-        <p className="mt-5 mx-auto max-w-2xl text-sm sm:text-base text-white/70">
-          Unveiling a fashion destination where trends blend seamlessly with your
-          individual style aspirations. Discover today!
-        </p>
-
-        <div className="mt-8 flex items-center justify-center gap-4">
-          <a
-            href="#new"
-            className="group inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-semibold text-black
-                       bg-gradient-to-r from-white via-white to-white
-                       hover:translate-y-[-1px] transition-transform shadow-xl shadow-violet-500/10"
-          >
-            New collection
-            <span
-              className="inline-block transition-transform group-hover:translate-x-0.5"
-              aria-hidden
-            >
-              →
-            </span>
-          </a>
-
-          <a
-            href="#trending"
-            className="inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-semibold
-                       text-white border border-white/15 bg-white/5 backdrop-blur
-                       hover:bg-white/10 hover:border-white/25 transition"
-          >
-            Explore trending
-          </a>
-        </div>
-
-        <div className="mt-10 mx-auto w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur shadow-[0_8px_40px_-8px_rgba(59,130,246,0.25)]">
-          <div className="flex items-center justify-between text-xs text-white/70">
-            <span>Free shipping over $99</span>
-            <span>New drops weekly</span>
-            <span>Easy returns</span>
+      <div className="mx-auto max-w-6xl w-full">
+        <div className="mx-auto max-w-5xl flex flex-col items-center text-center">
+          {/* Decor: dentro del contenedor aislado y más chico en mobile */}
+     
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-slate-300/60 bg-white px-5 py-2 text-xs sm:text-sm font-semibold tracking-[0.18em] text-slate-600">
+            NEW SPRING COLLECTION 2025
           </div>
-        </div>
-      </div>
 
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/60 text-xs">
-        <div className="flex flex-col items-center gap-2">
-          <span>Scroll</span>
-          <span className="animate-bounce">⌄</span>
+          {/* Título */}
+          <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight max-w-4xl break-words">
+            A Symphony of Scent
+          </h1>
+
+          {/* Texto */}
+          <p className="mt-4 text-slate-600 max-w-2xl text-base sm:text-lg">
+            Descubrí fragancias elaboradas con esencias seleccionadas y un acabado impecable.
+            Elegancia atemporal para todos los días. Hechas para durar, pensadas para vos.
+          </p>
+
+          {/* CTAs */}
+          <div className="mt-8 flex flex-wrap justify-center gap-4 w-full max-w-2xl">
+            <a
+              href="#shop"
+              className="inline-flex min-w-[160px] items-center justify-center rounded-full bg-slate-900 text-white px-7 py-3 text-sm sm:text-base font-semibold hover:bg-slate-800 transition
+                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white
+                         motion-reduce:transition-none"
+              aria-label="Ir a la tienda"
+            >
+              Comprar ahora
+            </a>
+            <a
+              href="#details"
+              className="inline-flex min-w-[160px] items-center justify-center rounded-full border border-slate-300 bg-white px-7 py-3 text-sm sm:text-base font-semibold text-slate-900 hover:bg-slate-50 transition
+                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2 focus-visible:ring-offset-white
+                         motion-reduce:transition-none"
+              aria-label="Ver detalles de la colección"
+            >
+              Ver detalles
+            </a>
+          </div>
+
+          {/* Métricas */}
+          <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-xl">
+            {[
+              { k: "140+", v: "Fragancias" },
+              { k: "1M+", v: "Clientes" },
+              { k: "4.9★", v: "Valoración" },
+            ].map(({ k, v }) => (
+              <div key={v} className="rounded-2xl bg-white border border-slate-200 py-4 px-4">
+                <div className="text-lg sm:text-xl font-extrabold text-slate-500">{k}</div>
+                <div className="text-xs sm:text-sm text-slate-500">{v}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Beneficios */}
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-xl">
+            {[
+              { t: "Envíos gratis +$99", i: "🚚" },
+              { t: "Devoluciones fáciles", i: "↩️" },
+              { t: "Pago seguro", i: "🔒" },
+            ].map(({ t, i }) => (
+              <div
+                key={t}
+                className="rounded-xl bg-white/70 backdrop-blur border border-slate-200 text-slate-700 px-4 py-3 flex items-center justify-center gap-2"
+              >
+                <span className="text-lg" aria-hidden="true">{i}</span>
+                <span className="text-sm font-medium">{t}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
