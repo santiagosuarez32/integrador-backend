@@ -5,108 +5,127 @@ import AddToCartButton from "./AddToCartButton";
 import { fetchProductById, fetchRelated } from "@/lib/products";
 
 type PageParams = { id: string };
-export const revalidate = 60; // ISR opcional
+export const revalidate = 60;
+export const metadata = { title: "Detalle del producto" };
 
 export default async function ProductDetailPage(
-  { params }: { params: Promise<PageParams> }
+  { params }: { params: Promise<PageParams> }   // 👈  acepta Promise
 ) {
-  const { id } = await params;
+  const { id } = await params;                  // 👈  y lo resolvés
   const numId = Number(id);
 
   const product = await fetchProductById(numId);
+
   if (!product) {
     return (
       <section className="px-6 md:px-8 py-20">
         <div className="mx-auto max-w-5xl text-center">
           <h1 className="text-2xl font-bold text-slate-900">Producto no encontrado</h1>
           <p className="mt-2 text-slate-600">El producto solicitado no existe.</p>
+          <Link href="/products" className="inline-block mt-6 underline">
+            Volver a productos
+          </Link>
         </div>
       </section>
     );
   }
 
   const related = await fetchRelated(numId, 4);
+  const imgSrc: string = product.imageUrl ?? "/placeholder.png";
 
   return (
     <>
-      {/* Detalle */}
       <section className="px-6 md:px-8 pt-12 md:pt-16 pb-16 md:pb-20">
         <div className="mx-auto max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
           <div className="relative rounded-3xl overflow-hidden bg-white border border-gray-200 shadow-md">
             <div className="relative aspect-[4/3]">
               <Image
-                src={product.imageUrl}
+                src={imgSrc}
                 alt={product.name}
                 fill
                 className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 600px"
                 priority
-                sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,600px"
               />
             </div>
           </div>
 
           <div className="rounded-3xl bg-white border border-gray-200 shadow-md p-6 sm:p-8 text-slate-900">
-            <span className="inline-flex items-center rounded-full bg-yellow-100 text-yellow-700 px-3 py-1 text-xs font-semibold">
-              {product.category}
-            </span>
+            {product.category && (
+              <span className="inline-flex items-center rounded-full bg-yellow-100 text-yellow-700 px-3 py-1 text-xs font-semibold">
+                {product.category}
+              </span>
+            )}
 
             <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight">
               {product.name}
             </h1>
 
-            <p className="mt-3 text-slate-600">{product.description}</p>
+            {product.description && (
+              <p className="mt-3 text-slate-600">{product.description}</p>
+            )}
 
             <div className="mt-6 flex items-center justify-between">
-              <span className="text-2xl font-extrabold text-yellow-600">{product.price}</span>
+              <span className="text-2xl font-extrabold text-yellow-600">
+                {product.price}
+              </span>
+
               <AddToCartButton
                 id={product.id}
                 name={product.name}
                 priceDisplay={product.price}
-                priceNumber={product.priceNumber}
-                imageUrl={product.imageUrl}
-                category={product.category}
+                priceNumber={product.priceCents / 100}            // 👈 usa priceCents
+                imageUrl={product.imageUrl ?? "/placeholder.png"}
+                category={product.category ?? undefined}
               />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Relacionados */}
       <section className="px-6 md:px-8 pb-20">
         <div className="mx-auto max-w-6xl">
           <div className="mb-6 text-center">
-            <h2 className="text-xl md:text-2xl font-extrabold text-slate-900">También te puede gustar</h2>
-            <span className="text-sm text-slate-500">Selección para vos</span>
+            <h2 className="text-xl md:text-2xl font-extrabold text-slate-900">
+              También te puede gustar
+            </h2>
+            <span className="text-sm text-slate-500">Selección aleatoria para ti</span>
           </div>
 
           <div className="flex flex-wrap justify-center gap-6">
-            {related.map((r) => (
-              <Link key={r.id} href={`/products/${r.id}`} className="group w-full sm:w-64">
-                <article className="rounded-2xl bg-white border border-gray-200 shadow-md hover:shadow-lg transition-transform duration-300 hover:-translate-y-1 overflow-hidden">
-                  <div className="relative">
-                    <Image
-                      src={r.imageUrl}
-                      alt={r.name}
-                      width={600}
-                      height={400}
-                      className="h-44 w-full object-cover"
-                    />
-                    <span className="absolute top-3 left-3 text-[11px] font-semibold px-3 py-1 rounded-full bg-yellow-500 text-white shadow">
-                      {r.category}
-                    </span>
-                  </div>
-                  <div className="p-4 text-slate-900">
-                    <h3 className="font-bold leading-tight">{r.name}</h3>
-                    <div className="mt-3 flex items-center justify-between">
-                      <span className="text-yellow-600 font-extrabold">{r.price}</span>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-yellow-500 text-white text-xs font-semibold px-3 py-1 group-hover:bg-yellow-400 transition">
-                        Ver más →
-                      </span>
+            {related.map((r) => {
+              const rImg: string = r.imageUrl ?? "/placeholder.png";
+              return (
+                <Link key={r.id} href={`/products/${r.id}`} className="group w-full sm:w-64">
+                  <article className="rounded-2xl bg-white border border-gray-200 shadow-md hover:shadow-lg transition-transform duration-300 hover:-translate-y-1 overflow-hidden">
+                    <div className="relative">
+                      <Image
+                        src={rImg}
+                        alt={r.name}
+                        width={600}
+                        height={400}
+                        className="h-44 w-full object-cover"
+                      />
+                      {r.category && (
+                        <span className="absolute top-3 left-3 text-[11px] font-semibold px-3 py-1 rounded-full bg-yellow-500 text-white shadow">
+                          {r.category}
+                        </span>
+                      )}
                     </div>
-                  </div>
-                </article>
-              </Link>
-            ))}
+
+                    <div className="p-4 text-slate-900">
+                      <h3 className="font-bold leading-tight">{r.name}</h3>
+                      <div className="mt-3 flex items-center justify-between">
+                        <span className="text-yellow-600 font-extrabold">{r.price}</span>
+                        <span className="inline-flex items-center gap-1 rounded-full bg-yellow-500 text-white text-xs font-semibold px-3 py-1 group-hover:bg-yellow-400 transition">
+                          Ver más →
+                        </span>
+                      </div>
+                    </div>
+                  </article>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
