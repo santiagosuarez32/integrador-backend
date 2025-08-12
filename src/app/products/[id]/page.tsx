@@ -1,16 +1,25 @@
+// app/products/[id]/page.tsx
 import Image from "next/image";
 import Link from "next/link";
 import { getProductById, products } from "@/lib/products";
 
-type Props = { params: { id: string } };
+// Si querés tipar con el tipo de Next 15:
+type PageParams = { id: string };
+// Tipado opcional más estricto de Next 15:
+// import type { PageProps } from "next";
+// export default async function ProductDetailPage({ params }: PageProps<PageParams>) { ... }
 
 export function generateStaticParams() {
   return products.map((p) => ({ id: String(p.id) }));
 }
 
-export default function ProductDetailPage({ params }: Props) {
-  const id = Number(params.id);
-  const product = getProductById(id);
+export default async function ProductDetailPage(
+  { params }: { params: Promise<PageParams> }
+) {
+  const { id } = await params;              // 👈 await params
+  const numId = Number(id);
+
+  const product = getProductById(numId);
 
   if (!product) {
     return (
@@ -25,7 +34,7 @@ export default function ProductDetailPage({ params }: Props) {
 
   // Productos similares aleatorios (excluye el actual)
   const related = products
-    .filter((p) => p.id !== id)
+    .filter((p) => p.id !== numId)
     .sort(() => Math.random() - 0.5)
     .slice(0, 4);
 
@@ -43,6 +52,10 @@ export default function ProductDetailPage({ params }: Props) {
                 fill
                 className="object-cover"
                 priority
+                // 👇 requerido cuando usás `fill`
+                sizes="(max-width: 768px) 100vw,
+                       (max-width: 1200px) 50vw,
+                       600px"
               />
             </div>
           </div>
