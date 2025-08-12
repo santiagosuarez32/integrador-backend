@@ -1,26 +1,19 @@
-// app/products/[id]/page.tsx
+// src/app/products/[id]/page.tsx
 import Image from "next/image";
 import Link from "next/link";
-import { getProductById, products } from "@/lib/products";
+import AddToCartButton from "./AddToCartButton";
+import { fetchProductById, fetchRelated } from "@/lib/products";
 
-// Si querés tipar con el tipo de Next 15:
 type PageParams = { id: string };
-// Tipado opcional más estricto de Next 15:
-// import type { PageProps } from "next";
-// export default async function ProductDetailPage({ params }: PageProps<PageParams>) { ... }
-
-export function generateStaticParams() {
-  return products.map((p) => ({ id: String(p.id) }));
-}
+export const revalidate = 60; // ISR opcional
 
 export default async function ProductDetailPage(
   { params }: { params: Promise<PageParams> }
 ) {
-  const { id } = await params;              // 👈 await params
+  const { id } = await params;
   const numId = Number(id);
 
-  const product = getProductById(numId);
-
+  const product = await fetchProductById(numId);
   if (!product) {
     return (
       <section className="px-6 md:px-8 py-20">
@@ -32,18 +25,13 @@ export default async function ProductDetailPage(
     );
   }
 
-  // Productos similares aleatorios (excluye el actual)
-  const related = products
-    .filter((p) => p.id !== numId)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 4);
+  const related = await fetchRelated(numId, 4);
 
   return (
     <>
-      {/* Detalle producto */}
-      <section className="px-6 md:px-8 pt-24 md:pt-28 pb-16 md:pb-20">
+      {/* Detalle */}
+      <section className="px-6 md:px-8 pt-12 md:pt-16 pb-16 md:pb-20">
         <div className="mx-auto max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-          {/* Imagen */}
           <div className="relative rounded-3xl overflow-hidden bg-white border border-gray-200 shadow-md">
             <div className="relative aspect-[4/3]">
               <Image
@@ -52,15 +40,11 @@ export default async function ProductDetailPage(
                 fill
                 className="object-cover"
                 priority
-                // 👇 requerido cuando usás `fill`
-                sizes="(max-width: 768px) 100vw,
-                       (max-width: 1200px) 50vw,
-                       600px"
+                sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,600px"
               />
             </div>
           </div>
 
-          {/* Info */}
           <div className="rounded-3xl bg-white border border-gray-200 shadow-md p-6 sm:p-8 text-slate-900">
             <span className="inline-flex items-center rounded-full bg-yellow-100 text-yellow-700 px-3 py-1 text-xs font-semibold">
               {product.category}
@@ -74,24 +58,25 @@ export default async function ProductDetailPage(
 
             <div className="mt-6 flex items-center justify-between">
               <span className="text-2xl font-extrabold text-yellow-600">{product.price}</span>
-              <button className="rounded-full bg-yellow-500 text-white font-semibold px-6 py-3 hover:bg-yellow-400 transition">
-                Agregar al carrito
-              </button>
+              <AddToCartButton
+                id={product.id}
+                name={product.name}
+                priceDisplay={product.price}
+                priceNumber={product.priceNumber}
+                imageUrl={product.imageUrl}
+                category={product.category}
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Productos similares */}
+      {/* Relacionados */}
       <section className="px-6 md:px-8 pb-20">
         <div className="mx-auto max-w-6xl">
           <div className="mb-6 text-center">
-            <h2 className="text-xl md:text-2xl font-extrabold text-slate-900">
-              También te puede gustar
-            </h2>
-            <span className="text-sm text-slate-500">
-              Selección aleatoria para ti
-            </span>
+            <h2 className="text-xl md:text-2xl font-extrabold text-slate-900">También te puede gustar</h2>
+            <span className="text-sm text-slate-500">Selección para vos</span>
           </div>
 
           <div className="flex flex-wrap justify-center gap-6">
@@ -110,7 +95,6 @@ export default async function ProductDetailPage(
                       {r.category}
                     </span>
                   </div>
-
                   <div className="p-4 text-slate-900">
                     <h3 className="font-bold leading-tight">{r.name}</h3>
                     <div className="mt-3 flex items-center justify-between">
