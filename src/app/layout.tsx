@@ -2,6 +2,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+// Importamos Nav y Footer
+import Nav from "@/components/Nav";
+import Footer from "@/components/Footer";
+
 export const metadata: Metadata = {
   title: "CHICX Perfumes",
   description: "Perfumes exclusivos y elegantes",
@@ -20,7 +24,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         minHeight: "100%",
       }}
     >
-      <body className="text-slate-100 bg-transparent">{children}</body>
+      <body className="text-slate-100 bg-transparent">
+        <Nav />
+        <main>{children}</main>
+        <Footer />
+      </body>
     </html>
   );
 }
