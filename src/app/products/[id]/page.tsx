@@ -8,10 +8,35 @@ type PageParams = { id: string };
 export const revalidate = 60;
 export const metadata = { title: "Detalle del producto" };
 
+// Helpers
+function usd(n: number) {
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  }).format(n);
+}
+
+function parsePriceDisplay(s?: string | null) {
+  if (!s) return null;
+  const cleaned = s.replace(/[^\d.,-]/g, "");
+  if (cleaned.includes(",") && cleaned.includes(".")) {
+    const normalized = cleaned.replace(/\./g, "").replace(",", ".");
+    const n = Number(normalized);
+    return Number.isFinite(n) ? n : null;
+  }
+  if (cleaned.includes(",") && !cleaned.includes(".")) {
+    const n = Number(cleaned.replace(",", "."));
+    return Number.isFinite(n) ? n : null;
+  }
+  const n = Number(cleaned);
+  return Number.isFinite(n) ? n : null;
+}
+
 export default async function ProductDetailPage(
-  { params }: { params: Promise<PageParams> }   // 👈  acepta Promise
+  { params }: { params: Promise<PageParams> } // si ya lo tenías así, lo dejo igual
 ) {
-  const { id } = await params;                  // 👈  y lo resolvés
+  const { id } = await params;
   const numId = Number(id);
 
   const product = await fetchProductById(numId);
@@ -30,8 +55,27 @@ export default async function ProductDetailPage(
     );
   }
 
+  // Normalizo campos que pueden venir en snake o camel:
+  const priceCents = (product as any).price_cents ?? (product as any).priceCents ?? null;
+  const imageUrl = (product as any).image_url ?? (product as any).imageUrl ?? null;
+  const priceText: string | null = (product as any).price ?? null;
+
+  // priceNumber seguro:
+  let priceNumber =
+    typeof priceCents === "number" && Number.isFinite(priceCents)
+      ? priceCents / 100
+      : parsePriceDisplay(priceText) ?? 0;
+
+  if (!Number.isFinite(priceNumber) || priceNumber <= 0) {
+    priceNumber = 0; // último fallback
+  }
+
+  // priceDisplay seguro:
+  const priceDisplay =
+    priceText && priceText.trim().length > 0 ? priceText : usd(priceNumber);
+
   const related = await fetchRelated(numId, 4);
-  const imgSrc: string = product.imageUrl ?? "/placeholder.png";
+  const imgSrc: string = imageUrl ?? "/placeholder.png";
 
   return (
     <>
@@ -67,16 +111,16 @@ export default async function ProductDetailPage(
 
             <div className="mt-6 flex items-center justify-between">
               <span className="text-2xl font-extrabold text-yellow-600">
-                {product.price}
+                {priceDisplay}
               </span>
 
               <AddToCartButton
                 id={product.id}
                 name={product.name}
-                priceDisplay={product.price}
-                priceNumber={product.priceCents / 100}            // 👈 usa priceCents
-                imageUrl={product.imageUrl ?? "/placeholder.png"}
-                category={product.category ?? undefined}
+                priceNumber={priceNumber}     // ✅ número en USD
+                priceDisplay={priceDisplay}   // ✅ texto para mostrar
+                imageUrl={imageUrl}
+                category={product.category}
               />
             </div>
           </div>
@@ -94,7 +138,7 @@ export default async function ProductDetailPage(
 
           <div className="flex flex-wrap justify-center gap-6">
             {related.map((r) => {
-              const rImg: string = r.imageUrl ?? "/placeholder.png";
+              const rImg: string = (r as any).image_url ?? (r as any).imageUrl ?? "/placeholder.png";
               return (
                 <Link key={r.id} href={`/products/${r.id}`} className="group w-full sm:w-64">
                   <article className="rounded-2xl bg-white border border-gray-200 shadow-md hover:shadow-lg transition-transform duration-300 hover:-translate-y-1 overflow-hidden">
@@ -116,7 +160,9 @@ export default async function ProductDetailPage(
                     <div className="p-4 text-slate-900">
                       <h3 className="font-bold leading-tight">{r.name}</h3>
                       <div className="mt-3 flex items-center justify-between">
-                        <span className="text-yellow-600 font-extrabold">{r.price}</span>
+                        <span className="text-yellow-600 font-extrabold">
+                          {(r as any).price ?? usd(((r as any).price_cents ?? 0) / 100)}
+                        </span>
                         <span className="inline-flex items-center gap-1 rounded-full bg-yellow-500 text-white text-xs font-semibold px-3 py-1 group-hover:bg-yellow-400 transition">
                           Ver más →
                         </span>

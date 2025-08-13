@@ -1,9 +1,8 @@
-// app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
-import { CartProvider } from "@/contexts/CartContext";
+import Providers from "./providers"; // ⬅️ ver archivo de abajo
 
 export const metadata: Metadata = {
   title: "CHICX Perfumes",
@@ -21,11 +20,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       }}
     >
       <body className="text-slate-100 bg-transparent">
-        <CartProvider>
+        <Providers>
           <Nav />
           <main className="min-h-screen pt-16 md:pt-20">{children}</main>
           <Footer />
-        </CartProvider>
+        </Providers>
       </body>
     </html>
   );
