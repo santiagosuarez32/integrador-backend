@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useMemo, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/CartContext";
 
 type Props = { open: boolean; onClose: () => void };
@@ -14,7 +15,21 @@ const fmt = (cents: number) =>
 const clamp = (n: number, min = 1, max = 10) =>
   Math.max(min, Math.min(max, Number.isFinite(n) ? n : min));
 
+/** Normaliza el precio unitario del item en CENTAVOS. */
+function unitCents(it: any): number {
+  if (typeof it?.priceCents === "number" && Number.isFinite(it.priceCents)) {
+    return Math.round(it.priceCents);
+  }
+  const p = Number(it?.price);
+  if (Number.isFinite(p)) {
+    // Si viene muy grande, asumimos que ya está en centavos
+    return p > 1000 ? Math.round(p) : Math.round(p * 100);
+  }
+  return 0;
+}
+
 export default function CartDrawer({ open, onClose }: Props) {
+  const router = useRouter();
   const { items, count, remove, setQty, clear } = useCart();
 
   // Filtros locales
@@ -27,17 +42,13 @@ export default function CartDrawer({ open, onClose }: Props) {
   );
 
   const filtered = useMemo(
-    () =>
-      items.filter(
-        (i) => (minQty ? i.qty >= minQty : true) && (cat ? i.category === cat : true)
-      ),
+    () => items.filter((i) => (minQty ? i.qty >= minQty : true) && (cat ? i.category === cat : true)),
     [items, minQty, cat]
   );
 
-  // Subtotal solo de los filtrados (coincide con la vista)
+  // Subtotal (de lo que se ve filtrado)
   const subtotalCents = useMemo(
-    () =>
-      filtered.reduce((acc, it) => acc + (Number(it.price) || 0) * (Number(it.qty) || 0), 0),
+    () => filtered.reduce((acc, it) => acc + unitCents(it) * (Number(it.qty) || 0), 0),
     [filtered]
   );
 
@@ -116,18 +127,21 @@ export default function CartDrawer({ open, onClose }: Props) {
             <p className="text-slate-400">Tu carrito está vacío o los filtros no devuelven resultados.</p>
           ) : (
             <ul className="space-y-4">
-              {filtered.map((it) => {
-                const unit = Number(it.price) || 0; // CENTAVOS
-                const line = unit * (Number(it.qty) || 0);
-                const pid = it.productId;
+              {filtered.map((it, idx) => {
+                const pid = Number(it.id) || Number(it.productId) || 0;
+                const variantKey = it.variant ? String(it.variant) : "default";
+                const qty = clamp(Number(it.qty) || 1);
+                const unit = unitCents(it); // CENTAVOS
+                const line = unit * qty;
 
                 return (
                   <li
-                    key={it.id}
+                    key={`${pid}-${variantKey}-${idx}`}
                     className="flex gap-3 border border-neutral-800 rounded-xl p-3 bg-neutral-900/40"
                   >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={it.imageUrl || "/placeholder-product.jpg"}
+                      src={it.imageUrl || "/placeholder.png"}
                       alt={it.name}
                       className="w-16 h-16 rounded-lg object-cover border border-neutral-800 bg-neutral-800/30"
                       loading="lazy"
@@ -154,7 +168,7 @@ export default function CartDrawer({ open, onClose }: Props) {
                         {/* Qty control */}
                         <div className="inline-flex items-center rounded-full border border-neutral-700">
                           <button
-                            onClick={() => setQty(pid, clamp((it.qty || 1) - 1), it.variant ?? null)}
+                            onClick={() => setQty(pid, clamp(qty - 1), it.variant ?? null)}
                             className="px-3 py-1.5 hover:bg-white/5"
                             aria-label="Disminuir"
                           >
@@ -162,16 +176,20 @@ export default function CartDrawer({ open, onClose }: Props) {
                           </button>
                           <input
                             inputMode="numeric"
-                            value={it.qty}
+                            value={qty}
                             onChange={(e) => {
                               const n = clamp(Number(e.target.value || 0));
                               const res = setQty(pid, n, it.variant ?? null);
-                              if (!res.ok) e.currentTarget.value = String(it.qty);
+                              // si devolvés un objeto {ok:false}, volvemos al valor anterior
+                              // @ts-ignore: por si tu setQty no retorna nada
+                              if (res && res.ok === false) {
+                                e.currentTarget.value = String(qty);
+                              }
                             }}
                             className="w-10 text-center bg-transparent"
                           />
                           <button
-                            onClick={() => setQty(pid, clamp((it.qty || 1) + 1), it.variant ?? null)}
+                            onClick={() => setQty(pid, clamp(qty + 1), it.variant ?? null)}
                             className="px-3 py-1.5 hover:bg-white/5"
                             aria-label="Aumentar"
                           >
@@ -210,8 +228,11 @@ export default function CartDrawer({ open, onClose }: Props) {
             </button>
             <button
               disabled={count === 0}
+              onClick={() => {
+                onClose();
+                router.push("/checkout");
+              }}
               className="flex-1 rounded-full bg-amber-400 text-neutral-900 font-semibold px-4 py-2 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-amber-300"
-              onClick={() => alert("Ir a checkout")}
             >
               Checkout
             </button>
