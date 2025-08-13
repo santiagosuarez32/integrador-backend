@@ -80,6 +80,20 @@ const STATUS_LABELS: Record<OrderStatus, string> = {
 
 const statusLabel = (s: OrderStatus) => STATUS_LABELS[s] ?? s;
 
+type PaymentMethod = "mercadopago" | "tarjeta" | "transferencia" | "efectivo";
+
+const PAYMENT_LABELS: Record<PaymentMethod, string> = {
+  mercadopago: "Mercado Pago",
+  tarjeta: "Tarjeta de crédito/débito",
+  transferencia: "Transferencia",
+  efectivo: "Efectivo",
+};
+
+function paymentLabel(s: string | null | undefined) {
+  const key = (s ?? "").toLowerCase() as PaymentMethod;
+  return PAYMENT_LABELS[key] ?? (s ?? "—");
+}
+
 
 /* ==============================
    Componente
@@ -775,7 +789,8 @@ export default function AdminDashboard() {
                           <td className="px-4 py-3 font-extrabold text-amber-600">
                             {fmt(o.total_cents)}
                           </td>
-                          <td className="px-4 py-3">{o.payment_method || "—"}</td>
+                          <td className="px-4 py-3">{paymentLabel(o.payment_method)}</td>
+
                           <td className="px-4 py-3">
                             <select
   value={o.status}
@@ -952,7 +967,8 @@ export default function AdminDashboard() {
 
                 <h4 className="text-sm font-semibold mt-4 mb-2">Pago</h4>
                 <div className="text-sm">
-                  <div>Método: {selectedOrder.payment_method || "—"}</div>
+                  <div>Método: {paymentLabel(selectedOrder.payment_method)}</div>
+
                   <div>
                     Total: <span className="font-semibold">{fmt(selectedOrder.total_cents)}</span>
                   </div>
